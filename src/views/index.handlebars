@@ -46,7 +46,7 @@
                 backgroundColor: window.chartColors.blue,
                 fill: false,
                 data: Temperature,
-                yAxisID: "y2",
+                yAxisID: "y1",
                 tension: 0.4
             }
         ]
@@ -74,16 +74,16 @@
                         display: true,
                         position: "left",
                         id: "y-Humidity",
-                        min: 20,
-                        max: 80,
+                        suggestedMin: 40,
+                        suggestedMax: 65,
                     },
                     y1: {
                         type: "linear",
                         display: true,
                         position: "right",
                         id: "y-Temperature",
-                        min: 15,
-                        max: 40,
+                        suggestedMin: 20,
+                        suggestedMax: 30,
                         gridLines: {
                             drawOnChartArea: false,
                         },

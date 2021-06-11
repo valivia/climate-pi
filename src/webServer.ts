@@ -20,7 +20,7 @@ export default function (pool: Pool) {
 
     app.get('/', async function (req, res) {
         let db = await pool.getConnection();
-        let results = await db.query("SELECT * FROM SensorData ORDER BY Date DESC LIMIT 390");
+        let results = await db.query("SELECT * FROM SensorData ORDER BY Date DESC LIMIT 400");
         db.release();
 
         let Temperature = [];
