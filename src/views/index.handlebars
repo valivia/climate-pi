@@ -6,6 +6,8 @@
     <title>test</title>
     <script src="/jquery.js" type="text/javascript"></script>
     <script src="/chart.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/script.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -13,85 +15,9 @@
         <canvas id="canvas" width="893" height="446"></canvas>
     </div>
 </body>
-<script>
-    window.chartColors = {
-        red: 'rgb(255, 99, 132)',
-        orange: 'rgb(255, 159, 64)',
-        yellow: 'rgb(255, 205, 86)',
-        green: 'rgb(75, 192, 192)',
-        blue: 'rgb(54, 162, 235)',
-        purple: 'rgb(153, 102, 255)',
-        grey: 'rgb(201, 203, 207)'
-    };
-
-    const Humidity = [{{ Humidity }}];
-    const Minute = [{{{ Minute }}}];
-    const Temperature = [{{ Temperature }}];
-
-    var lineChartData = {
-        labels: Minute,
-        datasets: [
-            {
-                label: "Humidity",
-                borderColor: window.chartColors.red,
-                backgroundColor: window.chartColors.red,
-                fill: false,
-                data: Humidity,
-                yAxisID: "y",
-                tension: 0.4,
-            },
-            {
-                label: "Temperature",
-                borderColor: window.chartColors.blue,
-                backgroundColor: window.chartColors.blue,
-                fill: false,
-                data: Temperature,
-                yAxisID: "y1",
-                tension: 0.4
-            }
-        ]
-    };
-
-    window.onload = function () {
-        var ctx = document.getElementById("canvas").getContext("2d");
-        const graph = new Chart(ctx, {
-            type: "line",
-            data: lineChartData,
-            options: {
-                responsive: true,
-                stacked: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                title: {
-                    display: true,
-                    text: 'Climate'
-                },
-                scales: {
-                    y: {
-                        type: "linear",
-                        display: true,
-                        position: "left",
-                        id: "y-Humidity",
-                        suggestedMin: 40,
-                        suggestedMax: 65,
-                    },
-                    y1: {
-                        type: "linear",
-                        display: true,
-                        position: "right",
-                        id: "y-Temperature",
-                        suggestedMin: 20,
-                        suggestedMax: 30,
-                        gridLines: {
-                            drawOnChartArea: false,
-                        },
-                    }
-                }
-            }
-        });
-    };
-</script>
-
+<style>
+    body, html {
+        background-color: rgb(37, 37, 37);
+    }
+</style>
 </html>

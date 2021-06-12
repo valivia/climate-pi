@@ -13,6 +13,8 @@
     "express-handlebars": "^5.3.2",
     "mariadb": "^2.5.3",
     "node-cron": "^3.0.0",
-    "path": "^0.12.7"
+    "node-dht-sensor": "^0.4.3",
+    "path": "^0.12.7",
+    "socket.io": "^4.1.2"
   }
 }

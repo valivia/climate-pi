@@ -2,46 +2,48 @@ import { Connection, Pool, PoolConnection } from "mariadb";
 import cron from "node-cron"
 import sensor from "node-dht-sensor";
 import dotenv from "dotenv";
+import { broadcast } from "./sockets";
 dotenv.config();
 
 const env = process.env;
 let conn: PoolConnection;
 let pool: Pool;
 
-export default async function init(dbPool: Pool) {
-    pool = dbPool;
-    if (!await initDB()) { process.exit() }
-    cron.schedule(env.INTERVAL as string, () => { main(conn); });
+interface Ires {
+    humidity: number;
+    temperature: number;
 }
 
-async function main(db: Connection) {
-    const sensors = await getSensors();
-    if (!sensors) return;
-    console.log(
-        `temp: ${sensors.temperature.toFixed(1)}°C, ` +
-        `humidity: ${sensors.humidity.toFixed(1)}%`
-    );
-    db.query("INSERT INTO SensorData (Humidity, Temperature) VALUES(?,?)", [sensors.humidity, sensors.temperature])
-        .catch(async err => {
-            console.log(err);
-            await initDB();
-        })
-}
-
-async function getSensors(): Promise<Ires | false> {
+async function getReading(): Promise<Ires> {
     try {
-        const res = await sensor.read(env.SENSORTYPE, env.PIN);
-        return res;
+        const reading = await sensor.read(env.SENSORTYPE, env.PIN);
+        return reading;
     } catch (err) {
-        console.error("Failed to read sensor data:", err);
-        return false;
+        throw {
+            err,
+            message: "Failed to read sensor data",
+            type: "SENSOR_ERROR"
+        };
     }
 }
 
-async function initDB(): Promise<boolean> {
+async function saveReading(conn: Connection, reading: Ires) {
     try {
-        const res = await pool.getConnection();
-        conn = res
+        let queryResult = await conn.query("INSERT INTO SensorData (Humidity, Temperature) VALUES(?,?)", [reading.humidity, reading.temperature]);
+        let query = await conn.query("SELECT * FROM SensorData WHERE ID = ?", queryResult.insertId);
+        return query[0];
+    } catch (err) {
+        throw {
+            err,
+            message: `Failed to save reading ${JSON.stringify(reading)} to db`,
+            type: "DB_ERROR"
+        };
+    }
+}
+
+async function initConnection(): Promise<boolean> {
+    try {
+        conn = await pool.getConnection();
         return true;
     } catch (e) {
         console.log(e);
@@ -49,7 +51,25 @@ async function initDB(): Promise<boolean> {
     }
 }
 
-interface Ires {
-    humidity: number;
-    temperature: number;
+async function main(db: Connection) {
+    try {
+        const reading = await getReading();
+        console.log(`temp: ${reading.temperature.toFixed(1)}°C, humidity: ${reading.humidity.toFixed(1)}%`);
+        const dbEntry = await saveReading(db, reading);
+        broadcast(dbEntry);
+    } catch (err) {
+        console.error(err.message, err.err);
+
+        if (err.type === "DB_ERROR") {
+            await initConnection();
+        }
+    }
+}
+
+export default async function init(dbPool: Pool) {
+    pool = dbPool;
+    if (!await initConnection()) {
+        process.exit()
+    }
+    cron.schedule(env.INTERVAL as string, () => { main(conn); });
 }
