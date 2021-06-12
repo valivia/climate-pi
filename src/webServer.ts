@@ -12,10 +12,6 @@ import http from "http";
 import { Pool } from "mariadb";
 env.config();
 
-function convertTZ(date: Date, tzString: string) {
-    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
-}
-
 export default function (pool: Pool) {
 
     const app = express()
@@ -28,13 +24,8 @@ export default function (pool: Pool) {
 
     app.use(express.static(path.join(__dirname, "public")));
 
-    app.get('/', async function (req, res) {
-        let db = await pool.getConnection();
-        let results = await db.query("SELECT * FROM SensorData ORDER BY Date DESC LIMIT 400");
-        db.release();
-
-        res.render("index", { layout: false, results });
-        //res.json(results);
+    app.get('/', async function (_req, res) {
+        res.render("index", { layout: false });
     });
 
     sockets(io, pool);
