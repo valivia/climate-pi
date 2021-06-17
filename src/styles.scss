@@ -1,0 +1,62 @@
+@font-face {
+    font-family: "abel";
+    src: url("./abel.ttf");
+}
+
+* {
+    box-sizing: border-box;
+    color: white;
+}
+
+$background: black;
+
+body {
+    margin: 0;
+    width: 100%;
+    overflow: scroll;
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-color: rgb(37, 37, 37);
+
+    font-family: "abel";
+    text-transform: uppercase;
+    /* font-size: 2.125rem; */
+    letter-spacing: 3px;
+    font-weight: normal;
+}
+
+canvas {
+    text-transform: uppercase;
+    letter-spacing: initial;
+    font-weight: normal;
+}
+
+.header {
+    padding: 60px;
+    text-align: center;
+    background: red;
+}
+.bar {
+    text-align: center;
+    padding: 1vh;
+    background: rgb(27, 27, 27);
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.graph {
+    flex: 70%;
+    background-color: $background;
+    padding: 1vw;
+}
+
+.info {
+    font-size: 1vw;
+    flex: 30%;
+    background-color: $background;
+    padding: 4vw;
+    text-align: center;
+}

@@ -4,6 +4,8 @@ colors.enable();
 import express from "express";
 import env from "dotenv";
 import handlebars from "express-handlebars";
+import logger from "morgan";
+//import sass from "node-sass-middleware";
 import path from "path";
 import sockets from "./sockets"
 import { Server } from "socket.io";
@@ -19,8 +21,18 @@ export default function (pool: Pool) {
     const io = new Server(server);
 
     app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
-    app.set('view engine', 'handlebars');
     app.set("views", path.join(__dirname, "views"));
+    app.set('view engine', 'handlebars');
+    app.use(logger("dev"));
+    /*app.use(sass({
+        debug: false,
+        dest: path.join(__dirname, "/public"),
+        force: true,
+        indentedSyntax: false,
+        outputStyle: "compressed",
+        src: __dirname
+    }));*/
+
 
     app.use(express.static(path.join(__dirname, "public")));
 

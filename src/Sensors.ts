@@ -27,7 +27,7 @@ async function getReading(): Promise<Ires> {
     }
 }
 
-async function saveReading(conn: Connection, reading: Ires) {
+async function saveReading(conn: Connection, reading: Ires): Promise<Ires> {
     try {
         let queryResult = await conn.query("INSERT INTO SensorData (Humidity, Temperature) VALUES(?,?)", [reading.humidity, reading.temperature]);
         let query = await conn.query("SELECT * FROM SensorData WHERE ID = ?", queryResult.insertId);
@@ -56,7 +56,7 @@ async function main(db: Connection) {
         const reading = await getReading();
         console.log(`temp: ${reading.temperature.toFixed(1)}°C, humidity: ${reading.humidity.toFixed(1)}%`);
         const dbEntry = await saveReading(db, reading);
-        broadcast(dbEntry);
+        broadcast("new data", dbEntry);
     } catch (err) {
         console.error(err.message, err.err);
 
